@@ -24,5 +24,7 @@ client.on('message', message => {
   }
 });
 
+//Ignore this
+
 //Log the bot into Discord using the token
 client.login(token);
