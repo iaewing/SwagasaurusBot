@@ -42,7 +42,7 @@ module.exports = {
  *        if False: a string stating that the args were bad
  *  !NOTE: This will only evaluate the FIRST argument passed in.
  */
-const parseDiceInput = (element, diceRegex) => diceRegex.test(arg)?arg.split('d'):"Bad Args";
+const parseDiceInput = (element, diceRegex) => diceRegex.test(element)?element.split('d'):"Bad Args";
 
 
 /* Function Name: Roll Dice
@@ -59,15 +59,31 @@ function rollDice(args){
     let result =[];
     const min = 1
     if(args.length >= 2){
-        //Checking digits in the even indicies to get the number of dice to be rolled
+        //Sexy new logic
+        args.forEach(element => {
+            let index = args.indexOf(element);
+            //Checking digits in the even indicies to get the number of dice to be rolled
+            if(index%2 === 0){
+                //Roll that many dice
+                for(let i = 0; i < element; i++){
+                    //Grab the digit in the index+1 slot to get the number of sides of dice
+                    result.push(getRndInteger(args[index+1]));
+                }
+            }
+        });
+
+        /*
+        Unsexy logic, refactored out 
         for(let i = 0; i< args.length; i+=2){
 
-            //Roll that many dice 
+             
             for(let j = 0; j<args[i]; j++){
-                //Grab the digit in the i+1 slot to get the number of sides of dice
+                
                 result.push(getRndInteger(min, args[i+1]))
             }
         }
+         */
+        
     }
     else
     {
