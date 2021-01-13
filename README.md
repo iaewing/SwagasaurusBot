@@ -15,6 +15,8 @@ Dice roller syntax:
 
     !r 1d6 rolls 1 six sided die
     !r 2d8 rolls 2 8 sided dice
+    
+    NOTE: The following two commands are not in the production build
     !r 2d20k1 rolls 2 20 sided dice, and returns the highest result
     !r 6d6k3 rolls 6 6 sided dice, and returns the highest 3
     More dice rolling functionality on the way!
