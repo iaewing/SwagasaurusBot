@@ -50,45 +50,11 @@ client.on('message', message => {
   }
 });
 
-/************************************
- * THis is where dice roller functionality is going! 
- * 
- * 
- ************************************/
-const diceRegex = /\dd\d/
- //Functions to roll some dice
-
- /* Function Name: parseDiceInput
- * Purpose: Parse the input of a user
- * input: string
- * ouput: 
- *        if TRUE: an array containing the number of and sides of the dice
- *        if False: a string stating that the args were bad
- */
-const parseDiceInput = (args, diceRegex) => diceRegex.test(args)?args.split('d'):"Bad Args";
-
-
-/* Function Name: Roll Dice
- * Purpose: Simulate the rolling of x dice with y sides
- * input: array with 2 elements: 
- *          the number of dice at index 0
- *          The number of sides each die has at index 1 
- * ouput: an aray of the results
- */
-function rollDice(args){
-  let result =[];
-  const min = 1
-  for(let i = 0; i<args[0]; i++){
-    result.push(getRndInteger(min, args[1]))
-  }
-  return result;
-}
-
-function getRndInteger(min, max) {
-  return Math.floor(Math.random() * (max - min+1) ) + min;
-}
-
-//Ignore this
+client.on("guildMemberAdd", member => {
+  //member.channel.send('**' + member.user.username + '**, has joined the server!');
+  const channel = member.guild.channels.cache.get('798992417038401596');
+  channel.send(`** ${member.user.username} **, has joined the server!`);
+});
 
 //Log the bot into Discord using the token
 client.login(token);
