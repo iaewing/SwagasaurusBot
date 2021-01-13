@@ -1,6 +1,8 @@
 # SwagasaurusBot
 Implementation of a Discord Bot using Node.js and Discord.js
 
+Hosted on AWS EC2 for 24/7 uptime. 
+
 Some commands:
 
     !beep
