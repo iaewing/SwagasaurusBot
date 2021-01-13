@@ -8,8 +8,14 @@ const { prefix, token } = require('./config.json');
 const client = new Discord.Client();
 //Create a collection to hold all commands
 client.commands = new Discord.Collection();
+//Create a collection of role assignments
+roleCollection = new Discord.Collection();
 //Grab every file from the commands folder with the .js extension into an array
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+//Grab every file from the roles folder with the .js extension
+const roleAssigns = fs.readdirSync('./roles').filter(file => file.endsWith('.js'));
+
+const emojiRoles = ['1️⃣','2️⃣','3️⃣','🐔','🇦'];
 
 //We're going to fill the client.commands collection dynamically with whatever
 //comands are stored in ./commands. This will allow flexibility to add/remove
@@ -17,6 +23,14 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 for (const file of commandFiles) {
   const command = require(`./commands/${file}`);
   client.commands.set(command.name, command);
+}
+
+//We're going to fill the client.commands collection dynamically with whatever
+//comands are stored in ./commands. This will allow flexibility to add/remove
+//commands as needed.
+for (const file of roleAssigns) {
+  const roles = require(`./roles/${file}`);
+  roleCollection.set(roles.name, roles);
 }
 
 //Run this once at ready
@@ -55,6 +69,7 @@ client.on('messageDelete', message => {
     Here it is: \"${message}\"`);
 });
 
+//Greets new users
 client.on('guildMemberAdd', member => {
   //Grabs the welcome channel for sending messages
   const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
@@ -70,6 +85,25 @@ client.on('guildMemberAdd', member => {
         )});
 });
 
+client.on('messageReactionAdd', (messageReaction, user) => {
+    const chosenEmoji = messageReaction.emoji.name;
+    //If the reaction is not in our message channel, we don't care about it.
+    if (messageReaction.message.channel.name !== 'welcome')
+    {
+      return;
+    }
+    if (emojiRoles.includes(chosenEmoji)) {
+      //do stuff
+      //call command of chosenEmoji
+      try {
+        //Try to execute the command entered, as pulled from our collection.
+        client.commands.get(command).execute(message, args);
+      } catch (error) {
+        console.error(error);
+        message.reply('something broke while trying to do that!');
+      }
+    }
+})
 
 
 
