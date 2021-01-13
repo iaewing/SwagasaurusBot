@@ -56,13 +56,18 @@ client.on('messageDelete', message => {
 });
 
 client.on('guildMemberAdd', member => {
-  //member.channel.send('**' + member.user.username + '**, has joined the server!');
+  //Grabs the welcome channel for sending messages
   const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
 
-  channel.send(`${member.user.toString()}, has joined the server! Please select an emoji for the year you are in`)
+  //Greets the user by tagging them. Displays emjois asking them to select
+  //roles that apply to them.
+  channel.send(`${member.user.toString()}, has joined the server! Please select an emoji for the year you are in. Select the chicken (get it? Chicken? because chickens live in a chicken coop. And coop is like co-op. har har) if you are in Co-op and A if you are an alumnus. SWAGBOT OUT! #micdrop`)
          .then(sentEmbed=> { sentEmbed.react('1️⃣')
           .then(sentEmbed.react('2️⃣')
-          .then(sentEmbed.react('3️⃣')))});
+          .then(sentEmbed.react('3️⃣'))
+          .then(sentEmbed.react('🐔'))
+          .then(sentEmbed.react('🇦'))
+        )});
 });
 
 
