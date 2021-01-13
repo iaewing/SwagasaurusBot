@@ -1,3 +1,4 @@
+//Grab Node.js' file system so we can grab commands
 const fs = require('fs');
 //Add my discord.js dependency
 const Discord = require('discord.js');
@@ -5,8 +6,18 @@ const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 //create my client
 const client = new Discord.Client();
+//Create a collection to hold all commands
 client.commands = new Discord.Collection();
+//Grab every file from the commands folder with the .js extension into an array
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+//We're going to fill the client.commands collection dynamically with whatever
+//comands are stored in ./commands. This will allow flexibility to add/remove
+//commands as needed.
+for (const file of commandFiles) {
+  const command = require(`./commands/${file}`);
+  client.commands.set(command.name, command);
+}
 
 //Run this once at ready
 client.once('ready', () => {
@@ -25,21 +36,17 @@ client.on('message', message => {
   //Grab the first arg and lowercase it
   const command = args.shift().toLowerCase();
 
-	if (command === 'magic') {
-    message.channel.send(`Get Rekt ${message.author}`);
-  } else if (command === 'beep') {
-    message.channel.send('Boop');
-  } else if (command === 'server') {
-    message.channel.send(`This server's name is: ${message.guild.name}\n
-    Total members: ${message.guild.memberCount}`);
-  } else if (command === 'user-info') {
-    message.channel.send(`Your username: ${message.author.username}\n
-      Your ID: ${message.author.id}`);
-  } else if (command === 'args-info') {
-    if (!args.length) {
-      return message.reply(', you did not provid any arguments!');
-    }
-    message.channel.send(`Command name: ${command}\nArguments: ${args}`);
+  //Does the message contain a command from our collection? If no, return early.
+  if (!client.commands.has(command)) {
+    return;
+  }
+
+  try {
+    //Try to execute the command entered, as pulled from our collection.
+    client.commands.get(command).execute(message, args);
+  } catch (error) {
+    console.error(error);
+    message.reply('something broke while trying to do that!');
   }
 });
 
