@@ -50,9 +50,15 @@ client.on('message', message => {
   }
 });
 
-client.on("guildMemberAdd", member => {
+client.on('messageDelete', message => {
+  message.channel.send(`Uh oh! ${message.author.username} is trying to hide something!\n
+    Here it is: \"${message}\"`);
+});
+
+client.on('guildMemberAdd', member => {
   //member.channel.send('**' + member.user.username + '**, has joined the server!');
-  const channel = member.guild.channels.cache.get('798992417038401596');
+  const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
+  console.log(channel);
   channel.send(`** ${member.user.username} **, has joined the server!`);
 });
 
