@@ -47,8 +47,9 @@ module.exports = {
  */
 
 const parseDiceInput = (element, diceRegex,diceRegexKeepHighest) => 
-    diceRegex.test(element)?element.split('d'):
-        diceRegexKeepHighest.test(element)?element.split(/d|k/):"Bad args bud";
+    diceRegex.test(element)?
+        diceRegexKeepHighest.test(element)?element.split(/d|k/):element.split('d')
+        :"Bad args bud";
 
 
 /* Function Name: Roll Dice
