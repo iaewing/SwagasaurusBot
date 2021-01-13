@@ -65,9 +65,9 @@ function rollDice(args){
             //Checking digits in the even indicies to get the number of dice to be rolled
             if(index%2 === 0){
                 //Roll that many dice
-                for(let i = 0; i < element; i++){
+                for(let i = 0; i < parseInt(element); i++){
                     //Grab the digit in the index+1 slot to get the number of sides of dice
-                    result.push(getRndInteger(args[index+1]));
+                    result.push(getRndInteger(min,parseInt(args[index+1])));
                 }
             }
         });
@@ -98,7 +98,6 @@ function rollDice(args){
  * ouput: Random integer between and including max and min 
  *       
  */
-
 
 const getRndInteger = (min, max) =>
    Math.floor(Math.random() * (max - min+1) ) + min;
