@@ -14,7 +14,11 @@ module.exports = {
         if(!args.length){
             message.channel.send('Bad args homie!');
         } else {
-            rollDice(parseDiceInput(args, diceRegex));
+            let result = [];
+            args.forEach(element => {
+                result.push(rollDice(parseDiceInput(element, diceRegex)));
+            });
+            message.channel.send(result);
         }
   },
 };
@@ -24,10 +28,13 @@ module.exports = {
  * 
  * 
  ************************************/
-const diceRegex = /\dd\d/
+
+//This is a basic dice regex that handles the case x'd'y 
+//where x is the number of dice and y is the sides of each die
+ const diceRegex = /\dd\d/
  //Functions to roll some dice
 
- /* Function Name: parseDiceInput
+/* Function Name: parseDiceInput
  * Purpose: Parse the input of a user
  * input: string
  * ouput: 
@@ -35,22 +42,31 @@ const diceRegex = /\dd\d/
  *        if False: a string stating that the args were bad
  *  !NOTE: This will only evaluate the FIRST argument passed in.
  */
-const parseDiceInput = (args, diceRegex) => diceRegex.test(args)?args[0].split('d'):"Bad Args";
+const parseDiceInput = (element, diceRegex) => diceRegex.test(arg)?arg.split('d'):"Bad Args";
 
 
 /* Function Name: Roll Dice
  * Purpose: Simulate the rolling of x dice with y sides
- * input: array with 2 elements: 
- *          the number of dice at index 0
- *          The number of sides each die has at index 1 
+ * input: array with n elements: 
+ *          the number of dice at index 0,2,4.....n
+ *          The number of sides each die has at index 1,3,5.....n 
  * ouput: an aray of the results, or the args if the args are bad
+ * 
+ *      !NOTE: in the current implementation, this should only process one pair of args at a time 
+ *             However, it has been made extendible so it *COULD* process an array  of n args
  */
 function rollDice(args){
     let result =[];
     const min = 1
-    if(args.length == 2){
-        for(let i = 0; i<args[0]; i++){
-            result.push(getRndInteger(min, args[1]))
+    if(args.length >= 2){
+        //Checking digits in the even indicies to get the number of dice to be rolled
+        for(let i = 0; i< args.length; i+=2){
+
+            //Roll that many dice 
+            for(let j = 0; j<args[i]; j++){
+                //Grab the digit in the i+1 slot to get the number of sides of dice
+                result.push(getRndInteger(min, args[i+1]))
+            }
         }
     }
     else
@@ -60,6 +76,13 @@ function rollDice(args){
     return result;
 }
 
-function getRndInteger(min, max) {
-  return Math.floor(Math.random() * (max - min+1) ) + min;
-}
+/* Function Name: getRndInteger
+ * Purpose: Gets a random integer between min and max (inclusive)
+ * input: min value, max value
+ * ouput: Random integer between and including max and min 
+ *       
+ */
+
+
+const getRndInteger = (min, max) =>
+   Math.floor(Math.random() * (max - min+1) ) + min;
