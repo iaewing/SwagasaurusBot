@@ -16,7 +16,7 @@ module.exports = {
         } else {
             let result = [];
             args.forEach(element => {
-                result.push(rollDice(parseDiceInput(element, diceRegex)));
+                result.push(rollDice(parseDiceInput(element, diceRegex,diceRegexKeepHighest)));
             });
             message.channel.send(result);
         }
