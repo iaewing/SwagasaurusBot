@@ -3,7 +3,7 @@
  * RevHistory:
  *      Created 2021-1-13
  *      Timothy Nigh
- *  TODO: Implement rolling multiple kinds of dice
+ *  TODO: Implement keeping the highest
  *          
  */
 
@@ -31,18 +31,24 @@ module.exports = {
 
 //This is a basic dice regex that handles the case x'd'y 
 //where x is the number of dice and y is the sides of each die
+
  const diceRegex = /\dd\d/
- //Functions to roll some dice
+
+ const diceRegexKeepHighest = /\dd\dk\d/
+//Functions to roll some dice
 
 /* Function Name: parseDiceInput
  * Purpose: Parse the input of a user
  * input: string
  * ouput: 
  *        if TRUE: an array containing the number of and sides of the dice
+ *                 OR an array containing the above, plus the number of highest results to keep
  *        if False: a string stating that the args were bad
- *  !NOTE: This will only evaluate the FIRST argument passed in.
  */
-const parseDiceInput = (element, diceRegex) => diceRegex.test(element)?element.split('d'):"Bad Args";
+
+const parseDiceInput = (element, diceRegex,diceRegexKeepHighest) => 
+    diceRegex.test(element)?element.split('d'):
+        diceRegexKeepHighest.test(element)?element.split(/d|k/):"Bad args bud";
 
 
 /* Function Name: Roll Dice
@@ -55,39 +61,24 @@ const parseDiceInput = (element, diceRegex) => diceRegex.test(element)?element.s
  *      !NOTE: in the current implementation, this should only process one pair of args at a time 
  *             However, it has been made extendible so it *COULD* process an array  of n args
  */
-function rollDice(args){
+
+function rollDice(arg){
     let result =[];
     const min = 1
-    if(args.length >= 2){
+    if(arg.length >= 2){
         //Sexy new logic
-        args.forEach(element => {
-            let index = args.indexOf(element);
-            //Checking digits in the even indicies to get the number of dice to be rolled
-            if(index%2 === 0){
-                //Roll that many dice
-                for(let i = 0; i < parseInt(element); i++){
-                    //Grab the digit in the index+1 slot to get the number of sides of dice
-                    result.push(getRndInteger(min,parseInt(args[index+1])));
-                }
-            }
-        });
-
-        /*
-        Unsexy logic, refactored out 
-        for(let i = 0; i< args.length; i+=2){
-
-             
-            for(let j = 0; j<args[i]; j++){
-                
-                result.push(getRndInteger(min, args[i+1]))
-            }
+        //Roll that many dice
+        for(let i = 0; i < parseInt(arg[0]); i++){
+            //Grab the digit in the index+1 slot to get the number of sides of dice
+            result.push(getRndInteger(min,parseInt(arg[1])));
         }
-         */
-        
+    } else{
+        result = arg;
     }
-    else
-    {
-        result = args;
+
+    if(arg.length === 3){
+        result.sort((a,b)=>b-a);
+        result = result.slice(0,arg[2])
     }
     return result;
 }
