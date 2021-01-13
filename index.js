@@ -97,7 +97,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
       //call command of chosenEmoji
       try {
         //Try to execute the command entered, as pulled from our collection.
-        client.commands.get(command).execute(message, args);
+        roleCollection.get(name).execute(message, args);
       } catch (error) {
         console.error(error);
         message.reply('something broke while trying to do that!');
