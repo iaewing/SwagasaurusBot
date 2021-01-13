@@ -60,10 +60,17 @@ client.on('guildMemberAdd', member => {
   const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
   console.log(channel);
   channel.send(`** ${member.user.username} **, has joined the server! Please select an emoji for the year you are in`)
-         .react(':one:')
-         .then(':two:')
-         .then(':three:');
 });
+
+//Handle the sending of a message in the 'welcome' channel
+//Reacts to the message with three emoji
+client.on('message', message=>{
+  if(message.channel.name === 'welcome'){
+    message.react(':one:')
+    .then(':two:')
+    .then(':three:');
+  }
+})
 
 //Log the bot into Discord using the token
 client.login(token);
