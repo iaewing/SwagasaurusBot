@@ -1,3 +1,12 @@
+/* File Name: diceRoller.js
+ * Purpose: implementation of a basic dice roller for a discord bot
+ * RevHistory:
+ *      Created 2021-1-13
+ *      Timothy Nigh
+ *  TODO: Implement rolling multiple kinds of dice
+ *          
+ */
+
 module.exports = {
     name: 'r',
     description: 'roll a die',
@@ -24,8 +33,9 @@ const diceRegex = /\dd\d/
  * ouput: 
  *        if TRUE: an array containing the number of and sides of the dice
  *        if False: a string stating that the args were bad
+ *  !NOTE: This will only evaluate the FIRST argument passed in.
  */
-const parseDiceInput = (args, diceRegex) => diceRegex.test(args)?args.split('d'):"Bad Args";
+const parseDiceInput = (args, diceRegex) => diceRegex.test(args)?args[0].split('d'):"Bad Args";
 
 
 /* Function Name: Roll Dice
