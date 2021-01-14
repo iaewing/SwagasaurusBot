@@ -17,6 +17,8 @@ const roleAssigns = fs.readdirSync('./roles').filter(file => file.endsWith('.js'
 
 const emojiRoles = ['1️⃣','2️⃣','3️⃣','🐔','🇦'];
 
+let niceCount = 0;
+
 //We're going to fill the client.commands collection dynamically with whatever
 //comands are stored in ./commands. This will allow flexibility to add/remove
 //commands as needed.
@@ -41,6 +43,7 @@ client.once('ready', () => {
 client.on('message', message => {
   //Check for prefix and to make sure its not from a bot
   if (!message.content.startsWith(prefix) || message.author.bot) {
+    client.message.send(niceCounter(message.content, niceCount));
     return;
   }
 
@@ -105,7 +108,12 @@ client.on('messageReactionAdd', (messageReaction, user) => {
     }
 })
 
-
+function niceCounter(message, niceCount){
+  if (message.contains("69" || "420")){
+    niceCount++;
+    return `NICE. There have been ${niceCount} nice words since this bot awakened`;
+  }
+}
 
 
 //Log the bot into Discord using the token
