@@ -43,8 +43,12 @@ client.once('ready', () => {
 client.on('message', message => {
   //Check for prefix and to make sure its not from a bot
   if (!message.content.startsWith(prefix) || message.author.bot) {
-    //What happens when send gets nothing?
-    message.channel.send(niceCounter(message.content, niceCount));
+    //Checks author to make sure it's not 
+    if(!message.author.bot){
+      let niceMessage = niceCounter(message.content, niceCount)
+      if(niceMessage !== -1)
+        message.channel.send(niceMessage);
+    }
     return;
   }
 
@@ -110,18 +114,21 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 })
 
 function niceCounter(message, niceCount){
-  if(message.includes("69")&&message.includes("420")){
-    niceCount += 2;
-    return `DAMN! 69 and 420!? here have been ${niceCount} nice words since this bot awakened`
-  }
-  if (message.includes("69")){
-    niceCount++;
-    return `69!? NICE. There have been ${niceCount} nice words since this bot awakened`;
-  }
-  if(message.includes("420")){
-    niceCount++;
-    return `420!? BLAZE IT. There have been  There have been ${niceCount} nice words since this bot awakened`;
-  }
+  
+    if(message.content.includes("69")&&message.content.includes("420")){
+      niceCount += 2;
+      return `DAMN! 69 and 420!? here have been ${niceCount} nice words since this bot awakened`
+    }
+    if (message.includes("69")){
+      niceCount++;
+      return `69!? NICE. There have been ${niceCount} nice words since this bot awakened`;
+    }
+    if(message.includes("420")){
+      niceCount++;
+      return `420!? BLAZE IT. There have been  There have been ${niceCount} nice words since this bot awakened`;
+    }
+    return -1;
+  
 }
 
 
