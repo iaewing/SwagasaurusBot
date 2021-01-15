@@ -115,7 +115,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 
 function niceCounter(message, niceCount){
   
-    if(message.content.includes("69")&&message.content.includes("420")){
+    if(message.includes("69")&&message.includes("420")){
       niceCount += 2;
       return `DAMN! 69 and 420!? here have been ${niceCount} nice words since this bot awakened`
     }
