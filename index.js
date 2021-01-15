@@ -43,7 +43,8 @@ client.once('ready', () => {
 client.on('message', message => {
   //Check for prefix and to make sure its not from a bot
   if (!message.content.startsWith(prefix) || message.author.bot) {
-    client.message.send(niceCounter(message.content, niceCount));
+    //What happens when send gets nothing?
+    message.channel.send(niceCounter(message.content, niceCount));
     return;
   }
 
