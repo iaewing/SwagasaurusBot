@@ -95,6 +95,7 @@ client.on('guildMemberAdd', member => {
 
 client.on('messageReactionAdd', (messageReaction, user) => {
     const chosenEmoji = messageReaction.emoji.name;
+    let message = messageReaction.message;
     //If the reaction is not in our message channel, we don't care about it.
     if (messageReaction.message.channel.name !== 'welcome')
     {
@@ -104,11 +105,17 @@ client.on('messageReactionAdd', (messageReaction, user) => {
       //do stuff
       //call command of chosenEmoji
       try {
+        let member = message.guild.member(user);
         //Try to execute the command entered, as pulled from our collection.
-        roleCollection.get(name).execute(message, args);
+        //Our role modules 
+        if(member !== null){
+          roleCollection.get(chosenEmoji).execute(member, args);
+        }else{
+          message.channel.send("user does not exist in current guild");
+        }
       } catch (error) {
         console.error(error);
-        message.reply('something broke while trying to do that!');
+        message.channel.send('something broke while trying to do that!');
       }
     }
 })

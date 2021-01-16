@@ -6,11 +6,10 @@
  *  Created 2021-01-16
  *      Timothy Nigh
  */
-
 module.exports = {
-    name: '1️⃣',
-    description: 'Sorts user into year one',
+    name: '3️⃣',
+    description: 'Sorts user into year three',
     execute(member, args) {
-    member.addRole('yearOne')
+        member.addRole('yearThree')
   },
 };
