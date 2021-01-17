@@ -11,6 +11,7 @@ module.exports = {
     name: '1️⃣',
     description: 'Sorts user into year one',
     execute(member) {
+      const guild = member.guild;
       const role = guild.roles.cache.find(role => role.name === 'yearOne');
       member.roles.add(role)
   },
