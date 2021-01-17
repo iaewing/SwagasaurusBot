@@ -43,7 +43,7 @@ client.once('ready', () => {
 client.on('message', message => {
   //Check for prefix and to make sure its not from a bot
   if (!message.content.startsWith(prefix) || message.author.bot) {
-    //Checks author to make sure it's not 
+    //Checks author to make sure it's not
     if(!message.author.bot){
       let niceMessage = niceCounter(message.content, niceCount)
       if(niceMessage !== -1)
@@ -72,9 +72,19 @@ client.on('message', message => {
   }
 });
 
+
+/*
+Description:    Triggered when a message is deleted. Grabs the contents of the
+deleted message; then "names and shames" the author.
+*/
 client.on('messageDelete', message => {
-  message.channel.send(`Uh oh! ${message.author.username} is trying to hide something!\n
-    Here it is: \"${message}\"`);
+//Checks if the deleted message was written by a user.
+  if (!message.author.bot)
+  {
+    message.channel.send(`Uh oh! ${message.author.username} is trying to hide something!\n
+      Here it is: \"${message}\"`);
+  }
+  
 });
 
 //Greets new users
@@ -108,7 +118,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
       try {
         let member = message.guild.member(user);
         //Try to execute the command entered, as pulled from our collection.
-        //Our role modules 
+        //Our role modules
         if(member !== null){
           roleCollection.get(chosenEmoji).execute(member);
         }else{
@@ -122,7 +132,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 })
 
 function niceCounter(message, niceCount){
-  
+
     if(message.includes("69")&&message.includes("420")){
       niceCount += 2;
       return `DAMN! 69 and 420!? here have been ${niceCount} nice words since this bot awakened`
@@ -136,7 +146,7 @@ function niceCounter(message, niceCount){
       return `420!? BLAZE IT. There have been  There have been ${niceCount} nice words since this bot awakened`;
     }
     return -1;
-  
+
 }
 
 
