@@ -110,7 +110,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
         //Try to execute the command entered, as pulled from our collection.
         //Our role modules 
         if(member !== null){
-          roleCollection.get(chosenEmoji).execute(member, args);
+          roleCollection.get(chosenEmoji).execute(member);
         }else{
           message.channel.send("user does not exist in current guild");
         }

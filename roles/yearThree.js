@@ -10,6 +10,8 @@ module.exports = {
     name: '3️⃣',
     description: 'Sorts user into year three',
     execute(member) {
-      member.roles.add('yearThree')
+      const guild = member.guild;
+      const role = guild.roles.cache.find(role => role.name === 'yearThree');
+      member.roles.add(role)
   },
 };

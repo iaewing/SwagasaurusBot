@@ -10,6 +10,7 @@ module.exports = {
     name: '🐔',
     description: 'Sorts user into coop',
     execute(member) {
-      member.roles.add('coop')
+      const role = guild.roles.cache.find(role => role.name === 'coop');
+      member.roles.add(role)
   },
 };
