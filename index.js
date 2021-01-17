@@ -97,7 +97,8 @@ client.on('messageReactionAdd', (messageReaction, user) => {
     const chosenEmoji = messageReaction.emoji.name;
     let message = messageReaction.message;
     //If the reaction is not in our message channel, we don't care about it.
-    if (messageReaction.message.channel.name !== 'welcome')
+    //If the user is the bot, we don't care either
+    if (messageReaction.message.channel.name !== 'welcome' || user.bot)
     {
       return;
     }

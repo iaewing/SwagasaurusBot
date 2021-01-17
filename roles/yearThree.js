@@ -9,7 +9,7 @@
 module.exports = {
     name: '3️⃣',
     description: 'Sorts user into year three',
-    execute(member, args) {
-        member.addRole('yearThree')
+    execute(member) {
+      member.roles.add('yearThree')
   },
 };
