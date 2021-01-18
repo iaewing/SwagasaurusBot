@@ -122,8 +122,12 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 })
 
 function niceCounter(message, niceCount){
-  
-    if(message.includes("69")&&message.includes("420")){
+    /* Use regex to remove tags from the message search. Tags can contain these search elements and thus trigger
+       the nice counter unintentionally */
+    let mention = /<@(.*?)>/;
+    message = message.replace(mention, "");
+
+    if(message.includes("69") && message.includes("420")){
       niceCount += 2;
       return `DAMN! 69 and 420!? here have been ${niceCount} nice words since this bot awakened`
     }
@@ -138,7 +142,6 @@ function niceCounter(message, niceCount){
     return -1;
   
 }
-
 
 //Log the bot into Discord using the token
 client.login(token);
