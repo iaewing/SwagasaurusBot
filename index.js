@@ -1,3 +1,15 @@
+/*
+Program:      Swagasaurus Bot
+Description:  Bot utilizing node.js and discord.js. Preforms basic functionality
+              such as greeting new users and assigning them roles based on their
+              selection of an emoji on a welcome message. Also contains commands
+              triggered by certain text commands prefixed with a "!"
+Authors:      Ian Ewing and Timothy Nigh
+Created:      January 12, 2021
+*/
+
+
+
 //Grab Node.js' file system so we can grab commands
 const fs = require('fs');
 //Add my discord.js dependency
@@ -14,9 +26,9 @@ roleCollection = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 //Grab every file from the roles folder with the .js extension
 const roleAssigns = fs.readdirSync('./roles').filter(file => file.endsWith('.js'));
-
+//The emojis prompting the user for role selection
 const emojiRoles = ['1️⃣','2️⃣','3️⃣','🐔','🇦'];
-
+//Tracks the number of "nice" numbers tallied.
 let niceCount = 0;
 
 //We're going to fill the client.commands collection dynamically with whatever
@@ -35,15 +47,22 @@ for (const file of roleAssigns) {
   roleCollection.set(roles.name, roles);
 }
 
+
+
 //Run this once at ready
+//Informs the console that the bot is up and running
 client.once('ready', () => {
   console.log('Ready');
 });
 
+
+
+//Checks each message sent to see if it contains the command trigger "!" and a
+//valid command.
 client.on('message', message => {
   //Check for prefix and to make sure its not from a bot
   if (!message.content.startsWith(prefix) || message.author.bot) {
-    //Checks author to make sure it's not 
+    //Checks author to make sure it's not
     if(!message.author.bot){
       let niceMessage = niceCounter(message.content, niceCount)
       if(niceMessage !== -1)
@@ -72,12 +91,19 @@ client.on('message', message => {
   }
 });
 
+
+
+//When a message is deleted; grab the message and "name and shame" the author
+/*
 client.on('messageDelete', message => {
   message.channel.send(`Uh oh! ${message.author.username} is trying to hide something!\n
     Here it is: \"${message}\"`);
 });
+*/
 
-//Greets new users
+
+//When a new user joins the server this greets new users and prompts them to
+//select an emoji corresponding to the appropriate role
 client.on('guildMemberAdd', member => {
   //Grabs the welcome channel for sending messages
   const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
@@ -93,6 +119,10 @@ client.on('guildMemberAdd', member => {
         )});
 });
 
+
+
+//When an emoji is selected in the welcome channel by a user, this handles role
+//assignment.
 client.on('messageReactionAdd', (messageReaction, user) => {
     const chosenEmoji = messageReaction.emoji.name;
     let message = messageReaction.message;
@@ -108,7 +138,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
       try {
         let member = message.guild.member(user);
         //Try to execute the command entered, as pulled from our collection.
-        //Our role modules 
+        //Our role modules
         if(member !== null){
           roleCollection.get(chosenEmoji).execute(member);
         }else{
@@ -121,8 +151,12 @@ client.on('messageReactionAdd', (messageReaction, user) => {
     }
 })
 
+
+
+//Not fully functional.
+//This tallies and tracks whenever a user uses 69 or 420 in chat
 function niceCounter(message, niceCount){
-  
+
     if(message.includes("69")&&message.includes("420")){
       niceCount += 2;
       return `DAMN! 69 and 420!? here have been ${niceCount} nice words since this bot awakened`
@@ -136,7 +170,7 @@ function niceCounter(message, niceCount){
       return `420!? BLAZE IT. There have been  There have been ${niceCount} nice words since this bot awakened`;
     }
     return -1;
-  
+
 }
 
 
