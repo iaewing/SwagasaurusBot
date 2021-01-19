@@ -121,7 +121,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
     }
 })
 
-function niceCounter(message, niceCount){
+function niceCounter(message){
   
     if(message.includes("69")&&message.includes("420")){
       niceCount += 2;
