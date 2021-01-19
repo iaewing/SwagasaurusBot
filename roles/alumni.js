@@ -11,7 +11,7 @@ module.exports = {
     description: 'Sorts user into alumni',
     execute(member) {
       const guild = member.guild;
-      const role = guild.roles.cache.find(role => role.name === 'alumni');
+      const role = guild.roles.cache.find(role => role.name === 'Alumni');
       member.roles.add(role)
   },
 };
