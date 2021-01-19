@@ -49,7 +49,7 @@ module.exports = {
 const parseDiceInput = (element, diceRegex,diceRegexKeepHighest) => 
     diceRegex.test(element)?
         diceRegexKeepHighest.test(element)?element.split(/d|k/):element.split('d')
-        :"Bad args bud";
+        :-1;
 
 
 /* Function Name: Roll Dice
@@ -73,8 +73,8 @@ function rollDice(arg){
             //Grab the digit in the index+1 slot to get the number of sides of dice
             result.push(getRndInteger(min,parseInt(arg[1])));
         }
-    } else{
-        result = arg;
+    } else if(arg === -1){
+        result.push("bad arg bud");
     }
 
     if(arg.length === 3){
