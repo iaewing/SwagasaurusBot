@@ -151,12 +151,8 @@ client.on('messageReactionAdd', (messageReaction, user) => {
     }
 })
 
-
-
-//Not fully functional.
 //This tallies and tracks whenever a user uses 69 or 420 in chat
-function niceCounter(message, niceCount){
-
+function niceCounter(message){
     if(message.includes("69")&&message.includes("420")){
       niceCount += 2;
       return `DAMN! 69 and 420!? here have been ${niceCount} nice words since this bot awakened`
