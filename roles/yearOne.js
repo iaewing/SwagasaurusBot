@@ -12,7 +12,7 @@ module.exports = {
     description: 'Sorts user into year one',
     execute(member) {
       const guild = member.guild;
-      const role = guild.roles.cache.find(role => role.name === 'yearOne');
+      const role = guild.roles.cache.find(role => role.name === 'First Year');
       member.roles.add(role)
   },
 };
