@@ -62,11 +62,19 @@ client.once('ready', () => {
 client.on('message', message => {
   //Check for prefix and to make sure its not from a bot
   if (!message.content.startsWith(prefix) || message.author.bot) {
-    //Checks author to make sure it's not
-    if(!message.author.bot){
+    //Checks author to make sure it's not a bot
+    if(!message.author.bot) {
       let niceMessage = niceCounter(message.content, niceCount)
-      if(niceMessage !== -1)
+      if(niceMessage !== -1) {
         message.channel.send(niceMessage);
+      }
+      //Check for a bernie emoji
+      //Responds to the Bernie emoji with "FEEL THE BERN"
+      let response = theBern(message.content);
+      if (response !== -1)
+      {
+        message.channel.send(response);
+      }
     }
     return;
   }
@@ -168,6 +176,22 @@ function niceCounter(message){
     return -1;
 
 }
+
+//This function triggers off mentions of Bernie or the Bernie emoji with the
+//Berie emoji
+function theBern(message){
+    if(message.toLowerCase().includes("bernie")) {
+      return `FEEL THE BERN <:bern:802240138171514930>`;
+    }
+    if(message.includes(":bern:")) {
+      return `FEEL THE BERN <:bern:802240138171514930>`;
+    }
+    if(message.toLowerCase().includes("bern")) {
+      return `FEEL THE BERN <:bern:802240138171514930>`;
+    }
+    return -1;
+}
+
 
 
 //Log the bot into Discord using the token
