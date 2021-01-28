@@ -213,6 +213,7 @@ function stonks(message){
     if (message.toLowerCase().includes("stock") || message.toLowerCase().includes("stonk")) {
       return `STONKS`;
     }
+    return -1;
 }
 
 
