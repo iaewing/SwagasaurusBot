@@ -70,10 +70,17 @@ client.on('message', message => {
       }
       //Check for a bernie emoji
       //Responds to the Bernie emoji with "FEEL THE BERN"
-      let response = theBern(message.content);
-      if (response !== -1)
+      let responseBern = theBern(message.content);
+      if (responseBern !== -1)
       {
-        message.channel.send(response);
+        message.channel.send(responseBern);
+      }
+      //Check for our stocks keywords
+      //If found, respond with stonks meme
+      let responseStocks = stonks(message.content);
+      if (responseStocks !== -1)
+      {
+        message.channel.send(responseStocks, {files: ["https://i.imgur.com/EFqRbev.png"]});
       }
     }
     return;
@@ -190,6 +197,22 @@ function theBern(message){
       return `FEEL THE BERN <:bern:802240138171514930>`;
     }
     return -1;
+}
+
+//
+// Function:    stonks
+// Description: Checks the message passed in for keywords (GME, stocks, stonks)
+//              if found, returns a string message.
+// Paramters:   message - string message from chat server
+// Returns:     -1 for no keyword found, string message if found
+//
+function stonks(message){
+    if (message.toLowerCase().includes("gme")) {
+      return `ALL ABOARD! TO THE MOON`;
+    }
+    if (message.toLowerCase().includes("stock") || message.toLowerCase().includes("stonk")) {
+      return `STONKS`;
+    }
 }
 
 
