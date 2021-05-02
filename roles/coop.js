@@ -11,7 +11,7 @@ module.exports = {
     description: 'Sorts user into coop',
     execute(member) {
       const guild = member.guild;
-      const role = guild.roles.cache.find(role => role.name === 'coop');
+      const role = guild.roles.cache.find(role => role.name === 'Co-op');
       member.roles.add(role)
   },
 };
