@@ -122,10 +122,11 @@ client.on('messageDelete', message => {
 client.on('guildMemberAdd', member => {
   //Grabs the welcome channel for sending messages
   const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
+  const rulesChannel = member.guild.channels.cache.find(ch => ch.name === 'rules');
 
   //Greets the user by tagging them. Links them to the rules channel and then
   //displays emjois asking them to select roles that apply to them.
-  channel.send(`${member.user.toString()}, has joined the server! Make sure you visit <#${622164734841716736}> for our rules. Please select an emoji for the year you are in. Select the chicken (get it? Chicken? because chickens live in a chicken coop. And coop is like co-op. har har) if you are in Co-op and A if you are an alumnus. SWAGBOT OUT! #micdrop`)
+  channel.send(`${member.user.toString()}, has joined the server! Make sure you visit <#${rulesChannel.id}> for our rules. Please select an emoji for the year you are in. Select the chicken (get it? Chicken? because chickens live in a chicken coop. And coop is like co-op. har har) if you are in Co-op and A if you are an alumnus. SWAGBOT OUT! #micdrop`)
          .then(sentEmbed=> { sentEmbed.react('1️⃣')
           .then(sentEmbed.react('2️⃣')
           .then(sentEmbed.react('3️⃣'))
@@ -135,6 +136,10 @@ client.on('guildMemberAdd', member => {
 });
 
 
+//Channel that's exclusive to "Unassigned" roles. 
+//Pinned message with emojis corresponding to roles
+//When the user selects one, they are assigned that role. 
+//This also removes them from the channel preventing multiple role selections.
 
 //When an emoji is selected in the welcome channel by a user, this handles role
 //assignment.
@@ -156,6 +161,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
         //Our role modules
         if(member !== null){
           roleCollection.get(chosenEmoji).execute(member);
+          //Remove the "Unassigned" role
         }else{
           message.channel.send("user does not exist in current guild");
         }
@@ -165,6 +171,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
       }
     }
 })
+
 
 //This tallies and tracks whenever a user uses 69 or 420 in chat
 function niceCounter(message){
