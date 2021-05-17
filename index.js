@@ -31,7 +31,7 @@ const emojiRoles = ['1️⃣', '2️⃣', '3️⃣', '🐔', '🇦'];
 //Tracks the number of "nice" numbers tallied.
 let niceCount = 0;
 
-const guild = client.guilds.get(config.serverID);
+//const guild = client.guilds.get(config.serverID);
 
 
 //We're going to fill the client.commands collection dynamically with whatever
