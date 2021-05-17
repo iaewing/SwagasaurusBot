@@ -27,9 +27,12 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 //Grab every file from the roles folder with the .js extension
 const roleAssigns = fs.readdirSync('./roles').filter(file => file.endsWith('.js'));
 //The emojis prompting the user for role selection
-const emojiRoles = ['1️⃣','2️⃣','3️⃣','🐔','🇦'];
+const emojiRoles = ['1️⃣', '2️⃣', '3️⃣', '🐔', '🇦'];
 //Tracks the number of "nice" numbers tallied.
 let niceCount = 0;
+
+const guild = client.guilds.get(config.serverID);
+
 
 //We're going to fill the client.commands collection dynamically with whatever
 //comands are stored in ./commands. This will allow flexibility to add/remove
@@ -52,7 +55,7 @@ for (const file of roleAssigns) {
 //Run this once at ready
 //Informs the console that the bot is up and running
 client.once('ready', () => {
-  console.log('Ready');
+  console.log('Swagbot is up and running');
 });
 
 
@@ -63,24 +66,22 @@ client.on('message', message => {
   //Check for prefix and to make sure its not from a bot
   if (!message.content.startsWith(prefix) || message.author.bot) {
     //Checks author to make sure it's not a bot
-    if(!message.author.bot) {
+    if (!message.author.bot) {
       let niceMessage = niceCounter(message.content, niceCount)
-      if(niceMessage !== -1) {
+      if (niceMessage !== -1) {
         message.channel.send(niceMessage);
       }
       //Check for a bernie emoji
       //Responds to the Bernie emoji with "FEEL THE BERN"
       let responseBern = theBern(message.content);
-      if (responseBern !== -1)
-      {
+      if (responseBern !== -1) {
         message.channel.send(responseBern);
       }
       //Check for our stocks keywords
       //If found, respond with stonks meme
       let responseStocks = stonks(message.content);
-      if (responseStocks !== -1)
-      {
-        message.channel.send(responseStocks, {files: ["https://i.imgur.com/EFqRbev.png"]});
+      if (responseStocks !== -1) {
+        message.channel.send(responseStocks, { files: ["https://i.imgur.com/EFqRbev.png"] });
       }
     }
     return;
@@ -127,12 +128,14 @@ client.on('guildMemberAdd', member => {
   //Greets the user by tagging them. Links them to the rules channel and then
   //displays emjois asking them to select roles that apply to them.
   channel.send(`${member.user.toString()}, has joined the server! Make sure you visit <#${rulesChannel.id}> for our rules. Please select an emoji for the year you are in. Select the chicken (get it? Chicken? because chickens live in a chicken coop. And coop is like co-op. har har) if you are in Co-op and A if you are an alumnus. SWAGBOT OUT! #micdrop`)
-         .then(sentEmbed=> { sentEmbed.react('1️⃣')
-          .then(sentEmbed.react('2️⃣')
-          .then(sentEmbed.react('3️⃣'))
-          .then(sentEmbed.react('🐔'))
-          .then(sentEmbed.react('🇦'))
-        )});
+    .then(sentEmbed => {
+      sentEmbed.react('1️⃣')
+      .then(sentEmbed.react('2️⃣')
+        .then(sentEmbed.react('3️⃣'))
+        .then(sentEmbed.react('🐔'))
+        .then(sentEmbed.react('🇦'))
+      )
+    });
 });
 
 
@@ -144,66 +147,68 @@ client.on('guildMemberAdd', member => {
 //When an emoji is selected in the welcome channel by a user, this handles role
 //assignment.
 client.on('messageReactionAdd', (messageReaction, user) => {
-    const chosenEmoji = messageReaction.emoji.name;
-    let message = messageReaction.message;
-    //If the reaction is not in our message channel, we don't care about it.
-    //If the user is the bot, we don't care either
-    if (messageReaction.message.channel.name !== 'welcome' || user.bot)
-    {
-      return;
-    }
-    if (emojiRoles.includes(chosenEmoji)) {
-      //do stuff
-      //call command of chosenEmoji
-      try {
-        let member = message.guild.member(user);
-        //Try to execute the command entered, as pulled from our collection.
-        //Our role modules
-        if(member !== null){
-          roleCollection.get(chosenEmoji).execute(member);
-          //Remove the "Unassigned" role
-        }else{
-          message.channel.send("user does not exist in current guild");
-        }
-      } catch (error) {
-        console.error(error);
-        message.channel.send('something broke while trying to do that!');
+  const chosenEmoji = messageReaction.emoji.name;
+  let message = messageReaction.message;
+  //If the reaction is not in our message channel, we don't care about it.
+  //If the user is the bot, we don't care either
+  if (messageReaction.message.channel.name !== 'welcome' || user.bot) {
+    return;
+  }
+  if (emojiRoles.includes(chosenEmoji)) {
+    //do stuff
+    //call command of chosenEmoji
+    try {
+      let member = message.guild.member(user);
+      //Try to execute the command entered, as pulled from our collection.
+      //Our role modules
+      if (member !== null) {
+        roleCollection.get(chosenEmoji).execute(member);
+        //Find the Unassigned role
+        const unassignRole = guild.roles.cache.find(role => role.name === 'Unassigned');
+        //Remove the "Unassigned" role
+        member.roles.remove(unassignRole);
+      } else {
+        message.channel.send("user does not exist in current guild");
       }
+    } catch (error) {
+      console.error(error);
+      message.channel.send('something broke while trying to do that!');
     }
+  }
 })
 
 
 //This tallies and tracks whenever a user uses 69 or 420 in chat
-function niceCounter(message){
-    if(message.includes("69")&&message.includes("420")){
-      niceCount += 2;
-      return `DAMN! 69 and 420!? There have been ${niceCount} nice words since this bot awakened`
-    }
-    if (message.includes("69")){
-      niceCount++;
-      return `69!? NICE. There have been ${niceCount} nice words since this bot awakened`;
-    }
-    if(message.includes("420")){
-      niceCount++;
-      return `420!? BLAZE IT. There have been ${niceCount} nice words since this bot awakened`;
-    }
-    return -1;
+function niceCounter(message) {
+  if (message.includes("69") && message.includes("420")) {
+    niceCount += 2;
+    return `DAMN! 69 and 420!? There have been ${niceCount} nice words since this bot awakened`
+  }
+  if (message.includes("69")) {
+    niceCount++;
+    return `69!? NICE. There have been ${niceCount} nice words since this bot awakened`;
+  }
+  if (message.includes("420")) {
+    niceCount++;
+    return `420!? BLAZE IT. There have been ${niceCount} nice words since this bot awakened`;
+  }
+  return -1;
 
 }
 
 //This function triggers off mentions of Bernie or the Bernie emoji with the
 //Berie emoji
-function theBern(message){
-    if(message.toLowerCase().includes("bernie")) {
-      return `FEEL THE BERN <:bern:802240138171514930>`;
-    }
-    if(message.includes(":bern:")) {
-      return `FEEL THE BERN <:bern:802240138171514930>`;
-    }
-    if(message.toLowerCase().includes("bern")) {
-      return `FEEL THE BERN <:bern:802240138171514930>`;
-    }
-    return -1;
+function theBern(message) {
+  if (message.toLowerCase().includes("bernie")) {
+    return `FEEL THE BERN <:bern:802240138171514930>`;
+  }
+  if (message.includes(":bern:")) {
+    return `FEEL THE BERN <:bern:802240138171514930>`;
+  }
+  if (message.toLowerCase().includes("bern")) {
+    return `FEEL THE BERN <:bern:802240138171514930>`;
+  }
+  return -1;
 }
 
 //
@@ -213,14 +218,14 @@ function theBern(message){
 // Paramters:   message - string message from chat server
 // Returns:     -1 for no keyword found, string message if found
 //
-function stonks(message){
-    if (message.toLowerCase().includes("gme")) {
-      return `ALL ABOARD! TO THE MOON`;
-    }
-    if (message.toLowerCase().includes("stock") || message.toLowerCase().includes("stonk")) {
-      return `STONKS`;
-    }
-    return -1;
+function stonks(message) {
+  if (message.toLowerCase().includes("gme")) {
+    return `ALL ABOARD! TO THE MOON`;
+  }
+  if (message.toLowerCase().includes("stock") || message.toLowerCase().includes("stonk")) {
+    return `STONKS`;
+  }
+  return -1;
 }
 
 
