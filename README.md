@@ -20,6 +20,7 @@ Some commands:
     !ping
     !server
     !user-info
+    !dadjoke
 
 Dice roller syntax:
 
