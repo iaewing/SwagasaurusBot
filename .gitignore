@@ -3,4 +3,3 @@ swagbot.pem
 key2.pem
 node_modules/
 **/*.exvacuum.md
-package-lock.json
