@@ -2,3 +2,4 @@ config.json
 swagbot.pem
 key2.pem
 node_modules/
+**/*.exvacuum.md
