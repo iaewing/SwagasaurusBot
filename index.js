@@ -9,13 +9,14 @@ Created:      January 12, 2021
 Updated:      July 23, 2021
 */
 
-const fs = require('fs'); // Grab Node.js' file system so we can grab commands
-const { DiscordInteractions, InteractionResponseType, MessageFlags } = require('slash-commands');
+const fs = require('fs');
 const Discord = require('discord.js');
 const { // Add the configuration JSON as a dependency
   prefix,
   token,
 } = require('./config.json');
+const logger = require('./logger');
+const commands = require('./commands');
 
 /*
  * ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -26,8 +27,6 @@ const { // Add the configuration JSON as a dependency
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 const roleCollection = new Discord.Collection(); // Create a collection of role assignments
-// Gather every file from the commands folder with the .js extension
-const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith('.js'));
 // Gather every file from the roles folder with the .js extension
 const roleAssigns = fs.readdirSync('./roles').filter((file) => file.endsWith('.js'));
 // The emojis prompting the user for role selection
@@ -38,23 +37,14 @@ let persistentData = JSON.parse(fs.readFileSync('./persistent.json'));
 let { niceCount } = persistentData;
 
 // Called once bot is ready
-client.once('ready', () => {
-  /*
-    We're going to fill the client.commands collection dynamically with whatever
-    comands are stored in ./commands. This will allow flexibility to add/remove
-    commands as needed.
-  */
-  commandFiles.forEach((file) => {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.name, command);
-  });
-
+client.once('ready', async () => {
+  await commands.init();
   roleAssigns.forEach((file) => {
     const roles = require(`./roles/${file}`);
     roleCollection.set(roles.name, roles);
   });
 
-  console.log('Ready');
+  logger.rainbow('Swagaurus Rex is Ready!');
 });
 
 function updatePersistentData(data) {
@@ -177,6 +167,10 @@ client.on('message', (message) => {
       message.reply('something broke while trying to do that!');
     }
   }
+});
+
+client.ws.on('INTERACTION_CREATE', async (interaction) => {
+  commands.processInteraction(interaction, client);
 });
 
 /*

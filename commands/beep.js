@@ -4,10 +4,13 @@ Inputs:       message, args
 Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
+
+const commands = require('../commands');
+
 module.exports = {
   name: 'beep',
   description: 'Definitely not a robot',
-  execute(message) {
-    message.channel.send('Boop!');
+  execute(interaction, client) {
+    commands.sendImmediateResponseMessage(interaction, client, { content: 'Boop!' });
   },
 };

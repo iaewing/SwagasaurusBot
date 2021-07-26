@@ -4,10 +4,13 @@ Inputs:       message, args
 Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
+
+const commands = require('../commands');
+
 module.exports = {
   name: 'test',
-  description: 'Takes in ping, returns pong',
-  execute(message) {
-    message.channel.send('YOU\'RE NOT MY REAL DAD');
+  description: 'Test',
+  execute(interaction, client) {
+    commands.sendImmediateResponseMessage(interaction, client, 'YOU\'RE NOT MY REAL DAD');
   },
 };

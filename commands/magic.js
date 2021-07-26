@@ -4,10 +4,13 @@ Inputs:       message, args
 Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
+
+const commands = require('../commands');
+
 module.exports = {
   name: 'magic',
   description: 'Get rekt scrub',
-  execute(message) {
-    return message.reply(' get rekt.');
+  execute(interaction, client) {
+    commands.sendImmediateResponseMessage(interaction, client, { content: 'get rekt.' });
   },
 };

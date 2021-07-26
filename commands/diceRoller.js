@@ -7,6 +7,8 @@
  *   Silas (ExVacuum)
  */
 
+const commands = require('../commands');
+
 /*
   This is a basic dice regex that handles the format <x>d<y>[k<z>]`
   where x is the number of dice (0-999) and y is the number of sides of
@@ -92,10 +94,15 @@ function rollDice(dice, message) {
 }
 
 module.exports = {
-  name: 'r',
+  name: 'roll',
   description: 'roll dice',
-  execute(message) {
-    const diceString = message.content.replace('!r', '');
+  options: [{
+    name: 'sets',
+    type: 3,
+    required: true,
+  }],
+  execute(interaction, client) {
+    const diceString = interaction.data.options[0];
     let returnMessage = 'I literally have no idea what you\'re talking about.';
     if (diceRegex.test(diceString)) {
       let diceSets = diceString.split(/\s/gm);
@@ -103,6 +110,6 @@ module.exports = {
       returnMessage = '';
       diceSets.forEach((dice) => { returnMessage = rollDice(dice, returnMessage); });
     }
-    message.channel.send(returnMessage.length <= 2000 ? returnMessage : 'This command would have generated way too much output, please try something else.');
+    commands.sendImmediateResponseMessage(interaction, client, { content: (returnMessage.length <= 2000 ? returnMessage : 'This command would have generated way too much output, please try something else.') });
   },
 };

@@ -8,19 +8,20 @@
  */
 
 const bent = require('bent');
+const commands = require('../commands');
 
 const get = bent('json');
 
 module.exports = {
   name: 'dadjoke',
   description: 'Prints a dad joke',
-  async execute(message) {
+  async execute(interaction, client) {
     let response;
     try {
       response = (await get('https://icanhazdadjoke.com')).joke ?? 'Unfortunately, dad is unwell at the moment and cannot tell a joke :frowning2:';
     } catch (e) {
       response = 'Unfortunately, dad is unwell at the moment and cannot tell a joke :frowning2:';
     }
-    message.channel.send(response);
+    commands.sendImmediateResponseMessage(interaction, client, { content: response });
   },
 };
