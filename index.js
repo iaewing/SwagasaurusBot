@@ -10,11 +10,18 @@ Updated:      July 23, 2021
 */
 
 const fs = require('fs'); // Grab Node.js' file system so we can grab commands
+const { DiscordInteractions, InteractionResponseType, MessageFlags } = require('slash-commands');
 const Discord = require('discord.js');
 const { // Add the configuration JSON as a dependency
   prefix,
   token,
 } = require('./config.json');
+
+/*
+ * ┌──────────────────────────────────────────────────────────────────────────────┐
+ * │ INITIALIZATION                                                               │
+ * └──────────────────────────────────────────────────────────────────────────────┘
+ */
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -25,8 +32,10 @@ const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith
 const roleAssigns = fs.readdirSync('./roles').filter((file) => file.endsWith('.js'));
 // The emojis prompting the user for role selection
 const emojiRoles = ['1️⃣', '2️⃣', '3️⃣', '🐤', '🇦'];
+// Load persistent data from file
+let persistentData = JSON.parse(fs.readFileSync('./persistent.json'));
 // Tracks the number of "nice" numbers tallied.
-let niceCount = 0;
+let { niceCount } = persistentData;
 
 // Called once bot is ready
 client.once('ready', () => {
@@ -48,6 +57,11 @@ client.once('ready', () => {
   console.log('Ready');
 });
 
+function updatePersistentData(data) {
+  persistentData = { ...persistentData, ...data };
+  fs.writeFileSync('./persistent.json', JSON.stringify(persistentData));
+}
+
 /**
    @desc Determines whether the numbers 69 and/or 420 are in a given
    message (message is sanitized before testing), and generates an
@@ -60,16 +74,17 @@ client.once('ready', () => {
 function niceCounter(message) {
   let returnMessage;
   if (/(^| )69($| )/gm.test(message)) { // Test for 69
-    returnMessage = `69? Nice. There have been ${niceCount} nice words since this bot awakened.`;
     niceCount += 1;
+    returnMessage = `69? Nice. There have been ${niceCount} nice words since this bot awakened.`;
   }
   if (/(^| )420($| )/gm.test(message)) { // Test for 420
+    niceCount += 1;
     returnMessage = returnMessage
       ? `DAMN! 69 and 420!? There have been ${niceCount} nice words since this bot awakened`
       : `420!? BLAZE IT. There have been ${niceCount} nice words since this bot awakened`;
-    niceCount += 1;
   }
 
+  updatePersistentData({ niceCount });
   return returnMessage;
 }
 
