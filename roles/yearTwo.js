@@ -7,12 +7,11 @@
  *      Timothy Nigh
  */
 module.exports = {
-    name: '2️⃣',
-    description: 'Sorts user into year two',
-    execute(member) {
-      const guild = member.guild;
-      const role = guild.roles.cache.find(role => role.name === 'Second Year');
-      member.roles.add(role)
-
+  name: '2️⃣',
+  description: 'Sorts user into year two',
+  execute(member) {
+    const { guild } = member;
+    const roleToAdd = guild.roles.cache.find((role) => role.name === 'Second Year');
+    member.roles.add(roleToAdd);
   },
 };

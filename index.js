@@ -24,27 +24,27 @@ const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith
 // Gather every file from the roles folder with the .js extension
 const roleAssigns = fs.readdirSync('./roles').filter((file) => file.endsWith('.js'));
 // The emojis prompting the user for role selection
-const emojiRoles = [':one:', ':two:', ':three:', ':chicken:', ':a:'];
+const emojiRoles = ['1️⃣', '2️⃣', '3️⃣', '🐤', '🇦'];
 // Tracks the number of "nice" numbers tallied.
 let niceCount = 0;
 
-/*
-  We're going to fill the client.commands collection dynamically with whatever
-  comands are stored in ./commands. This will allow flexibility to add/remove
-  commands as needed.
-*/
-commandFiles.forEach((file) => {
-  const command = require(`./commands/${file}`);
-  client.commands.set(command.name, command);
-});
-
-roleAssigns.forEach((file) => {
-  const roles = require(`./roles/${file}`);
-  roleCollection.set(roles.name, roles);
-});
-
 // Called once bot is ready
 client.once('ready', () => {
+  /*
+    We're going to fill the client.commands collection dynamically with whatever
+    comands are stored in ./commands. This will allow flexibility to add/remove
+    commands as needed.
+  */
+  commandFiles.forEach((file) => {
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.name, command);
+  });
+
+  roleAssigns.forEach((file) => {
+    const roles = require(`./roles/${file}`);
+    roleCollection.set(roles.name, roles);
+  });
+
   console.log('Ready');
 });
 
@@ -58,14 +58,12 @@ client.once('ready', () => {
    the message.
  */
 function niceCounter(message) {
-  const sanitizedMessage = Discord.cleanContent(message);
-
   let returnMessage;
-  if (/(^| )69($| )/gm.test(sanitizedMessage)) { // Test for 69
+  if (/(^| )69($| )/gm.test(message)) { // Test for 69
     returnMessage = `69? Nice. There have been ${niceCount} nice words since this bot awakened.`;
     niceCount += 1;
   }
-  if (/(^| )420($| )/gm.test(sanitizedMessage)) { // Test for 420
+  if (/(^| )420($| )/gm.test(message)) { // Test for 420
     returnMessage = returnMessage
       ? `DAMN! 69 and 420!? There have been ${niceCount} nice words since this bot awakened`
       : `420!? BLAZE IT. There have been ${niceCount} nice words since this bot awakened`;
@@ -106,7 +104,7 @@ function stonks(message) {
     returnMessage = 'ALL ABOARD! TO THE MOON';
   }
 
-  if (!returnMessage && /(^| |\w+)sto[nc]k($| |\w+)/gm.test(message.toLowerCase())) {
+  if (!returnMessage && /(^| |[a-zA-Z]+)sto[nc]k($| |[a-zA-Z]+)/gm.test(message.toLowerCase())) {
     returnMessage = 'STONKS';
   }
 
@@ -123,7 +121,7 @@ client.on('message', (message) => {
     */
     if (!message.content.startsWith(prefix)) {
       // Check for a funny number
-      const niceMessage = niceCounter(message.content, niceCount);
+      const niceMessage = niceCounter(message.cleanContent, niceCount);
       if (niceMessage) {
         message.channel.send(niceMessage);
         return;
@@ -180,10 +178,10 @@ client.on('guildMemberAdd', (member) => {
     displays emjois asking them to select roles that apply to them.
   */
   channel.send(`${member.user.toString()}, has joined the server! Make sure you visit <#${rulesChannel.id}> for our rules.\
-    Please select an emoji for the year you are in. Select the chicken (get it? Chicken? because chickens live in a chicken\
-     coop. And coop is like co-op. har har) if you are in Co-op and A if you are an alumnus. SWAGBOT OUT! #micdrop`)
+   Please select an emoji for the year you are in. Select the chicken (get it? Chicken? because chickens live in a chicken\
+   coop. And coop is like co-op. har har) if you are in Co-op and A if you are an alumnus. SWAGBOT OUT! #micdrop`)
     .then((sentEmbed) => {
-      sentEmbed.react(':one:').then(sentEmbed.react(':two:').then(sentEmbed.react(':three:')).then(sentEmbed.react(':chicken:')).then(sentEmbed.react(':a:')));
+      sentEmbed.react('1️⃣').then(sentEmbed.react('2️⃣').then(sentEmbed.react('3️⃣')).then(sentEmbed.react('🐤')).then(sentEmbed.react('🇦')));
     });
 });
 

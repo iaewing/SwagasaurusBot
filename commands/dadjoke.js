@@ -1,30 +1,26 @@
-/* File:      dadjoke.js
-Description:  Receives a !dadjoke command and returns a dad joke from an online API
-Inputs:       message, args
-Created:      July 8, 2021
-Author:       DanWritesCode / Dan
-*/
-module.exports = {
-      name: 'dadjoke',
-      description: 'Prints a dad joke',
-      execute(message, args) {
-        const request = require("request");
+/* File Name: dadjoke.js
+ * Description: Receives a !dadjoke command and returns a dad joke from an online API
+ * Revision History:
+ *  Created 2021-7-8
+ *  DanWritesCode / Dan
+ *  Updated 2021-7-25
+ *  Silas (ExVacuum)
+ */
 
-        request({ 
-                uri: "https://icanhazdadjoke.com/", 
-                headers: {
-                    "Accept": "text/plain", 
-                    "User-Agent": "SwagasaurusBot Discord Bot (https://github.com/iaewing/SwagasaurusBot)"
-                }
-            },
-            function(error, response, body) {
-                if(error) {
-                    message.channel.send("Unfortunately, dad is unwell at the moment and cannot tell a joke :(");
-                    console.log(error);
-                    return;
-                }
-                message.channel.send(body);
-            }
-        );
-	  },
+const bent = require('bent');
+
+const get = bent('json');
+
+module.exports = {
+  name: 'dadjoke',
+  description: 'Prints a dad joke',
+  async execute(message) {
+    let response;
+    try {
+      response = (await get('https://icanhazdadjoke.com')).joke ?? 'Unfortunately, dad is unwell at the moment and cannot tell a joke :frowning2:';
+    } catch (e) {
+      response = 'Unfortunately, dad is unwell at the moment and cannot tell a joke :frowning2:';
+    }
+    message.channel.send(response);
+  },
 };

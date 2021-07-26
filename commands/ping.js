@@ -5,9 +5,9 @@ Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
 module.exports = {
-      name: 'ping',
-      description: 'Takes in ping, returns pong',
-      execute(message, args) {
-      message.channel.send('Pong.');
-    },
+  name: 'ping',
+  description: 'Takes in ping, returns pong',
+  execute(message) {
+    message.channel.send('Pong.');
+  },
 };

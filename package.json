@@ -13,8 +13,9 @@
   "author": "Ian Ewing",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.5.1",
-    "request": "^2.88.2"
+    "bent": "^7.3.12",
+    "dedent-js": "^1.0.1",
+    "discord.js": "^12.5.1"
   },
   "devDependencies": {
     "eslint": "^7.31.0",
