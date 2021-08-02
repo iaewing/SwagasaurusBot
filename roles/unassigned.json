@@ -1,0 +1,7 @@
+{
+  "name": "Unassigned",
+  "categories": {
+    "addOnJoin": true,
+    "removeOnRoleSelect": true
+  }
+}

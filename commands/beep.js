@@ -4,8 +4,7 @@ Inputs:       message, args
 Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
-
-const commands = require('../commands');
+const { commands } = require('../subsystems');
 
 module.exports = {
   name: 'beep',

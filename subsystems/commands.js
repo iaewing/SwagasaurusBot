@@ -1,13 +1,15 @@
 const fs = require('fs');
+const path = require('path');
 const Discord = require('discord.js');
-const { DiscordInteractions, InteractionResponseType, MessageFlags } = require('slash-commands');
+const {
+  DiscordInteractions,
+  InteractionResponseType,
+  MessageFlags,
+  ApplicationCommandOptionType,
+} = require('slash-commands');
 const deepEquals = require('deep-equal');
 const logger = require('./logger');
-const {
-  token,
-  appID,
-  pubkey,
-} = require('./config.json');
+const { token, appID, pubkey } = require('../config.json');
 
 // For Slash Commands
 const interaction = new DiscordInteractions({
@@ -18,9 +20,11 @@ const interaction = new DiscordInteractions({
 const commandCollection = new Discord.Collection();
 
 function loadCommands() {
-  const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith('.js'));
+  const commandFiles = fs
+    .readdirSync(path.join(__dirname, '/../commands'))
+    .filter((file) => file.endsWith('.js'));
   commandFiles.forEach((file) => {
-    const command = require(`./commands/${file}`);
+    const command = require(path.join(__dirname, `/../commands/${file}`));
     commandCollection.set(command.name, command);
     logger.info(`Loaded {magenta ${command.name}} from ${file}`);
   });
@@ -28,12 +32,12 @@ function loadCommands() {
 
 async function verifyCommandRegistration() {
   await interaction.getApplicationCommands().then(async (regCmds) => {
-    logger.info(`Found ${regCmds.length} commands.`);
+    logger.info(`Found ${regCmds.length} registered slash commands:`);
     const regCmdCollection = new Discord.Collection();
     regCmds.forEach(async (regCmd) => {
-      logger.info(`\t{green.bold ${regCmd.name}} [${regCmd.id}]`);
+      logger.info(`- {green.bold ${regCmd.name}} [${regCmd.id}]`);
       if (!commandCollection.has(regCmd.name)) {
-        logger.warning(`Registered slash command ${regCmd.name} not found locally, unregistering.`);
+        logger.warning(`Registered slash command ${regCmd.name} not found locally, deregistering.`);
         await interaction.deleteApplicationCommand(regCmd.id);
         return;
       }
@@ -43,9 +47,11 @@ async function verifyCommandRegistration() {
       let shouldCreate = true;
       if (regCmdCollection.has(cmd.name)) {
         const regCmd = regCmdCollection.get(cmd.name);
-        if (regCmd.description === cmd.description
+        if (
+          regCmd.description === cmd.description
           && (regCmd.options ? regCmd.options.length : 0)
-          === (cmd.options ? cmd.options.length : 0)) {
+          === (cmd.options ? cmd.options.length : 0)
+        ) {
           shouldCreate = false;
           if (regCmd.options) {
             regCmd.options.forEach((regOpt, index) => {
@@ -57,8 +63,10 @@ async function verifyCommandRegistration() {
         }
       }
       if (shouldCreate) {
-        logger.warning(`Local command ${cmd.name} not registered or updated, registering.`);
-        await interaction.createApplicationCommand(cmd);
+        logger.warning(`Local command ${cmd.name} not registered (or updated), registering.`);
+        await interaction.createApplicationCommand(cmd).then().catch((err) => {
+          logger.error(`Error adding command ${cmd.name}: ${err.message()}`);
+        });
       }
     });
   });
@@ -103,4 +111,5 @@ module.exports = {
   sendImmediateResponseMessage,
   sendPlaceholder,
   sendFollowUpMessage,
+  OptionTypes: ApplicationCommandOptionType,
 };

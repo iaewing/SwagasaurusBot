@@ -1,0 +1,8 @@
+{
+  "name": "Co-op",
+  "emoji": "🐤",
+  "flag": 4,
+  "categories": {
+    "newUserSelect": true
+  }
+}

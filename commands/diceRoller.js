@@ -7,7 +7,7 @@
  *   Silas (ExVacuum)
  */
 
-const commands = require('../commands');
+const { commands } = require('../subsystems');
 
 /*
   This is a basic dice regex that handles the format <x>d<y>[k<z>]`
@@ -27,7 +27,7 @@ const ARG = {
 const STATUS = {
   keptMoreThanRolled: {
     flag: 0b0001,
-    message: (args) => `Why do you want me to keep the top ${args[ARG.keep]} of ${args[ARG.num]} dice roll${args[ARG.num] > 1 ? 's' : ''}?\n`,
+    message: (args) => `Why do you want me to keep the top ${args[ARG.keep]} of ${args[ARG.num]} dice roll${args[ARG.num] !== 1 ? 's' : ''}?\n`,
   },
   keptZero: {
     flag: 0b0010,
@@ -95,14 +95,15 @@ function rollDice(dice, message) {
 
 module.exports = {
   name: 'roll',
-  description: 'roll dice',
+  description: 'Roll dice',
   options: [{
     name: 'sets',
-    type: 3,
+    description: 'A space-separated list of dice sets to roll',
+    type: commands.OptionTypes.STRING,
     required: true,
   }],
   execute(interaction, client) {
-    const diceString = interaction.data.options[0];
+    const diceString = ` ${interaction.data.options[0].value}`;
     let returnMessage = 'I literally have no idea what you\'re talking about.';
     if (diceRegex.test(diceString)) {
       let diceSets = diceString.split(/\s/gm);
