@@ -8,7 +8,7 @@
  */
 
 const bent = require('bent');
-const { commands } = require('../subsystems');
+const { commands } = require('../submodules');
 
 const get = bent('json');
 

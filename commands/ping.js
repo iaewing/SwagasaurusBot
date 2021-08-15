@@ -5,7 +5,7 @@ Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
 
-const { commands } = require('../subsystems');
+const { commands } = require('../submodules');
 
 module.exports = {
   name: 'ping',

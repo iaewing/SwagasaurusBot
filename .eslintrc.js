@@ -17,5 +17,6 @@ module.exports = {
     'no-plusplus': 0,
     'no-bitwise': 0,
     'no-param-reassign': ['error', { props: false }],
+    'no-await-in-loop': 0,
   },
 };

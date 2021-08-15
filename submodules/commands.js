@@ -1,3 +1,4 @@
+/* IMPORTS */
 const fs = require('fs');
 const path = require('path');
 const Discord = require('discord.js');
@@ -11,14 +12,22 @@ const deepEquals = require('deep-equal');
 const logger = require('./logger');
 const { token, appID, pubkey } = require('../config.json');
 
-// For Slash Commands
+/* CONSTANTS */
+const commandCollection = new Discord.Collection();
+// Use config info for Slash Commands
 const interaction = new DiscordInteractions({
   applicationId: appID,
   authToken: token,
   publicKey: pubkey,
 });
-const commandCollection = new Discord.Collection();
 
+/* FUNCTIONS */
+
+/**
+ * Loads commands into a collection from the commands folder
+ * @desc Dynamically imports command submodules from the commands folder
+ *       and synchronizes them with the globally-registered slash commands.
+ */
 function loadCommands() {
   const commandFiles = fs
     .readdirSync(path.join(__dirname, '/../commands'))
@@ -30,6 +39,7 @@ function loadCommands() {
   });
 }
 
+// Ensures dynamically-loaded functions are registered with the API
 async function verifyCommandRegistration() {
   await interaction.getApplicationCommands().then(async (regCmds) => {
     logger.info(`Found ${regCmds.length} registered slash commands:`);
@@ -102,7 +112,7 @@ function sendPlaceholder(inter, client) {
 }
 
 function sendFollowUpMessage(inter, client, data) {
-  new Discord.WebhookClient(client.user.id, interaction.token).send(data);
+  new Discord.WebhookClient(client.user.id, inter.token).send(data);
 }
 
 module.exports = {
@@ -112,4 +122,5 @@ module.exports = {
   sendPlaceholder,
   sendFollowUpMessage,
   OptionTypes: ApplicationCommandOptionType,
+  MessageFlags,
 };

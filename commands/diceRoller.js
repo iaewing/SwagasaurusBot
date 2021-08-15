@@ -7,7 +7,7 @@
  *   Silas (ExVacuum)
  */
 
-const { commands } = require('../subsystems');
+const { commands } = require('../submodules');
 
 /*
   This is a basic dice regex that handles the format <x>d<y>[k<z>]`

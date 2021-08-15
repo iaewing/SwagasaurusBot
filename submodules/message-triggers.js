@@ -6,9 +6,9 @@ const logger = require('./logger');
 const messageTriggerCollection = new Discord.Collection();
 
 function loadMessageTriggers() {
-  const messageTriggerFiles = fs.readdirSync(path.join(__dirname, '/../messageTriggers')).filter((file) => file.endsWith('.js'));
+  const messageTriggerFiles = fs.readdirSync(path.join(__dirname, '/../message-triggers')).filter((file) => file.endsWith('.js'));
   messageTriggerFiles.forEach((file) => {
-    const messageTrigger = require(path.join(__dirname, `/../messageTriggers/${file}`));
+    const messageTrigger = require(path.join(__dirname, `/../message-triggers/${file}`));
     messageTriggerCollection.set(messageTrigger.name, messageTrigger);
     logger.info(`Loaded message trigger {cyan ${messageTrigger.name}} from ${file}`);
   });

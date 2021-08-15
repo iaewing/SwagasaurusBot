@@ -2,6 +2,11 @@ const chalk = require('chalk');
 const chalkAnimation = require('chalk-animation');
 const fs = require('fs');
 const { CronJob } = require('cron');
+const config = require('../config.json');
+
+let { consoleMask, fileMask } = config.logger;
+consoleMask = Number.parseInt(consoleMask, 2);
+fileMask = Number.parseInt(fileMask, 2);
 
 let fileStream = fs.createWriteStream(`./logs/${new Date().toDateString().replace(/\s/g, '_')}.ansi`, { flags: 'a' });
 
@@ -27,9 +32,6 @@ const LEVELS = {
     color: 'bgRed.white',
   },
 };
-
-let consoleMask = 0b11111;
-let fileMask = 0b11110;
 
 // Here is our proxy to the chalk() template method.
 function chalkish(parts, ...substitutions) {

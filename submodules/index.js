@@ -3,6 +3,6 @@ module.exports = {
   logger: require('./logger'),
   roles: require('./roles'),
   widgets: require('./widgets'),
-  messageTriggers: require('./messageTriggers'),
+  messageTriggers: require('./message-triggers'),
   datafile: require('./datafile'),
 };
