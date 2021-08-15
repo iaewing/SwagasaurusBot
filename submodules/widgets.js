@@ -17,13 +17,13 @@ async function make(channel, message, componentList, callback) {
   sentMessage.react('✅');
   activeWidgets.set(sentMessage.id, {
     componentList,
-    choices: 0,
+    choices: {},
     callback,
   });
   return sentMessage.id;
 }
 
-function setChoice(widget, emoji, value) {
+function setChoice(widget, user, emoji, value) {
   let flag = 0;
   for (let i = 0; i < widget.componentList.length; i++) {
     const component = widget.componentList[i];
@@ -35,8 +35,8 @@ function setChoice(widget, emoji, value) {
   }
   const valueNormalized = value ? 1 : 0;
   const clearMask = ~(1 << flag);
-  widget.choices &= clearMask;
-  widget.choices |= (valueNormalized << flag);
+  widget.choices[user.id] &= clearMask;
+  widget.choices[user.id] |= (valueNormalized << flag);
 }
 
 function handleSubmit(widget, user, reaction) {
@@ -47,7 +47,7 @@ function handleSubmit(widget, user, reaction) {
     switch (component.type) {
       case ComponentTypes.RADIO:
         for (let j = 0; j < component.emojiList.length; j++) {
-          if ((widget.choices | (1 << choiceIndex)) === widget.choices) {
+          if ((widget.choices[user.id] | (1 << choiceIndex)) === widget.choices[user.id]) {
             success = true;
             break;
           }
@@ -64,7 +64,7 @@ function handleSubmit(widget, user, reaction) {
     }
   }
 
-  widget.callback(widget.choices, user, reaction);
+  widget.callback(widget.choices[user.id], user, reaction);
 }
 
 function handleReaction(widgetID, reaction, user, added) {
@@ -87,7 +87,7 @@ function handleReaction(widgetID, reaction, user, added) {
           case ComponentTypes.RADIO:
             component.emojiList.forEach((listEmoji) => {
               if (listEmoji === emoji) {
-                setChoice(widget, emoji, added);
+                setChoice(widget, user, emoji, added);
                 return;
               }
               if (added) {
@@ -99,14 +99,14 @@ function handleReaction(widgetID, reaction, user, added) {
                   ),
                 );
                 if (reactionToRemove) {
-                  setChoice(widget, listEmoji, 0);
+                  setChoice(widget, user, listEmoji, 0);
                   reactionToRemove.users.remove(user.id);
                 }
               }
             });
             break;
           case ComponentTypes.CHECKLIST:
-            setChoice(widget, emoji, added);
+            setChoice(widget, user, emoji, added);
             break;
           default:
             break;
