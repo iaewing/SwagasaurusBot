@@ -1,0 +1,9 @@
+{
+    "token":"XXXXXX",
+    "appID":"XXXXXX",
+    "pubkey":"XXXXXX",
+    "logger": {
+        "fileMask": "11110",
+        "consoleMask": "11111"
+    }
+}

@@ -4,11 +4,14 @@ Inputs:       message, args
 Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
+
+const { commands } = require('../submodules');
+
 module.exports = {
-      name: 'user-info',
-      description: 'Returns the callers username and ID',
-      execute(message, args) {
-      message.channel.send(`Your username: ${message.author.username}\n
-        Your ID: ${message.author.id}`);
-    },
+  name: 'user-info',
+  description: 'Returns the callers username and ID',
+  execute(interaction, client) {
+    commands.sendImmediateResponseMessage(interaction, client, { content: `Your username: ${interaction.member.user.username}\n
+        Your ID: ${interaction.member.user.id}` });
+  },
 };

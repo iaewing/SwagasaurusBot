@@ -1,0 +1,8 @@
+{
+  "name": "Alumni",
+  "emoji": "🇦",
+  "flag": 3,
+  "categories": {
+    "newUserSelect": true
+  }
+}
