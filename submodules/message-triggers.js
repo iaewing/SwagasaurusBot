@@ -25,14 +25,11 @@ function proccessMessage(message) {
       ? messageTrigger.format(message)
       : message.content;
     messageTrigger.regexList.forEach((regex, index) => {
-      logger.trace(regex);
       if (regex.test(formattedMessage)) {
         match |= (1 << index);
-        logger.trace(index);
       }
     });
     if (match !== 0) {
-      logger.trace(match);
       messageTrigger.execute(message, match);
     }
   });
