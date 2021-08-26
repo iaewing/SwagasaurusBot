@@ -17,7 +17,7 @@ module.exports = {
     }
     message.channel.send(returnMessage, {
       files: [
-        'https;//i.imgur.com/EFqRbev.png',
+        'https://i.imgur.com/EFqRbev.png',
       ],
     });
   },
