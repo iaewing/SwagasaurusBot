@@ -80,6 +80,7 @@ client.ws.on('INTERACTION_CREATE', async (interaction) => {
   commands.processInteraction(interaction, client);
 });
 
+
 // Called when a new member is added to a guild
 client.on('guildMemberAdd', async (member) => {
   Custom.onGuildMemberAdd(member, client);
@@ -89,6 +90,7 @@ client.on('guildMemberAdd', async (member) => {
 client.on('messageReactionAdd', (messageReaction, user) => {
   handleMessageReactionEvent(messageReaction, user, true);
 });
+
 
 // Called when a reaction is removed from a message
 client.on('messageReactionRemove', (messageReaction, user) => {
