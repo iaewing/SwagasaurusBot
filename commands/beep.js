@@ -7,7 +7,7 @@ Author:       Ian Ewing
 module.exports = {
       name: 'beep',
       description: 'Definitely not a robot',
-      execute(message, args) {
+      execute(message) {
       message.channel.send('Boop!');
     },
 };
