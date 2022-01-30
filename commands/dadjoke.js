@@ -4,27 +4,29 @@ Inputs:       message, args
 Created:      July 8, 2021
 Author:       DanWritesCode / Dan
 */
-module.exports = {
-      name: 'dadjoke',
-      description: 'Prints a dad joke',
-      execute(message, args) {
-        const request = require("request");
 
-        request({ 
-                uri: "https://icanhazdadjoke.com/", 
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
+module.exports = {
+  data: new SlashCommandBuilder().setName('dadjoke').setDescription('For all those times you miss your dad while he\'s out getting milk'),
+  async execute(interaction) {
+    const request = require("request");
+
+        request({
+                uri: "https://icanhazdadjoke.com/",
                 headers: {
-                    "Accept": "text/plain", 
+                    "Accept": "text/plain",
                     "User-Agent": "SwagasaurusBot Discord Bot (https://github.com/iaewing/SwagasaurusBot)"
                 }
             },
             function(error, response, body) {
                 if(error) {
-                    message.channel.send("Unfortunately, dad is unwell at the moment and cannot tell a joke :(");
+                    interaction.reply("Sorry, looks like you're still waiting for dad to get home from getting smokes");
                     console.log(error);
                     return;
                 }
-                message.channel.send(body);
+                interaction.reply(body);
             }
         );
-	  },
+  }
 };

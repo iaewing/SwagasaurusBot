@@ -4,11 +4,11 @@ Inputs:       message, args
 Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
-      name: 'user-info',
-      description: 'Returns the callers username and ID',
-      execute(message, args) {
-      message.channel.send(`Your username: ${message.author.username}\n
-        Your ID: ${message.author.id}`);
-    },
+  data: new SlashCommandBuilder().setName('user').setDescription('Returns the callers username and ID'),
+  async execute(interaction) {
+    await interaction.reply(`Your Username: ${interaction.author.ursername}\nYour ID: ${interaction.author.id}`);
+  }
 };

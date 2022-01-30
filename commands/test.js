@@ -4,10 +4,15 @@ Inputs:       message, args
 Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-      name: 'test',
-      description: 'Takes in ping, returns pong',
-      execute(message, args) {
-      message.channel.send(`YOU'RE NOT MY REAL DAD`);
-    },
+  data: new SlashCommandBuilder()
+    .setName("test")
+    .setDescription("Test Command - Do Not Use"),
+  execute(interaction) {
+    interaction.reply(
+      "YOU'RE NOT MY REAL DAD"
+    );
+  },
 };

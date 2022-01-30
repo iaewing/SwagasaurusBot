@@ -4,10 +4,13 @@ Inputs:       message, args
 Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 module.exports = {
-      name: 'ping',
-      description: 'Takes in ping, returns pong',
-      execute(message, args) {
-      message.channel.send('Pong.');
-    },
+	data: new SlashCommandBuilder()
+		.setName('ping')
+		.setDescription('Replies with Pong!'),
+	async execute(interaction) {
+		await interaction.reply('Pong!');
+	},
 };

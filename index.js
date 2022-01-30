@@ -8,36 +8,36 @@ Authors:      Ian Ewing and Timothy Nigh
 Created:      January 12, 2021
 */
 
-
 // const fs = require('fs');
 // const Discord = require('discord.js');
-const { prefix, token } = require('./config.json');
-const { Client, Intents } = require('discord.js')
-
-// const client = new Discord.Client();
-// client.commands = new Discord.Collection();
+const { token } = require("./config.json");
+const { Client, Collection, Intents } = require("discord.js");
+const fs = require('fs');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+client.commands = new Collection();
+
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+  const command = require(`./commands/${file}`);
+  client.commands.set(command.data.name, command);
+}
 
 // roleCollection = new Discord.Collection();
 
-// const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 // const roleAssigns = fs.readdirSync('./roles').filter(file => file.endsWith('.js'));
-const emojiRoles = ['1️⃣','2️⃣','3️⃣','🐔','🇦'];
+// const emojiRoles = ['1️⃣','2️⃣','3️⃣','🐔','🇦'];
 let niceCount = 0;
 
-// for (const file of commandFiles) {
-//   const command = require(`./commands/${file}`);
-//   client.commands.set(command.name, command);
-// }
 
 // for (const file of roleAssigns) {
 //   const roles = require(`./roles/${file}`);
 //   roleCollection.set(roles.name, roles);
 // }
 
-client.once('ready', () => {
-  console.log('Ready');
+client.once("ready", () => {
+  console.log("Ready");
 });
 
 //Checks each message sent to see if it contains the command trigger "!" and a
@@ -73,7 +73,6 @@ client.once('ready', () => {
 //     return;
 //   }
 
-
 //   //Grab just the args into an array by slicing the prefix number of characters
 //   //and trimming whitepsace
 //   const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -94,21 +93,20 @@ client.once('ready', () => {
 // //   }
 // });
 
-client.on('interactionCreate', async interaction => {
-	if (!interaction.isCommand()) return;
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
 
-	const { commandName } = interaction;
+  const command = client.commands.get(interaction.commandName);
 
-	if (commandName === 'ping') {
-		await interaction.reply('Pong!');
-	} else if (commandName === 'server') {
-		await interaction.reply(`Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`);
-	} else if (commandName === 'user') {
-		await interaction.reply(`Your tag: ${interaction.user.tag}\nYour id: ${interaction.user.id}`);
+	if (!command) return;
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
 });
-
-
 
 //When a message is deleted; grab the message and "name and shame" the author
 /*
@@ -135,7 +133,6 @@ client.on('messageDelete', message => {
 //           .then(sentEmbed.react('🇦'))
 //         )});
 // });
-
 
 //Channel that's exclusive to "Unassigned" roles.
 //Pinned message with emojis corresponding to roles
@@ -173,38 +170,36 @@ client.on('messageDelete', message => {
 //     }
 // })
 
-
 //This tallies and tracks whenever a user uses 69 or 420 in chat
 function niceCounter(message) {
-    if(message.includes("69") && message.includes("420")) {
-      niceCount += 2;
-      return `DAMN! 69 and 420!? There have been ${niceCount} nice words since this bot awakened`
-    }
-    if (message.includes("69")) {
-      niceCount++;
-      return `69!? NICE. There have been ${niceCount} nice words since this bot awakened`;
-    }
-    if(message.includes("420")) {
-      niceCount++;
-      return `420!? BLAZE IT. There have been ${niceCount} nice words since this bot awakened`;
-    }
-    return -1;
-
+  if (message.includes("69") && message.includes("420")) {
+    niceCount += 2;
+    return `DAMN! 69 and 420!? There have been ${niceCount} nice words since this bot awakened`;
+  }
+  if (message.includes("69")) {
+    niceCount++;
+    return `69!? NICE. There have been ${niceCount} nice words since this bot awakened`;
+  }
+  if (message.includes("420")) {
+    niceCount++;
+    return `420!? BLAZE IT. There have been ${niceCount} nice words since this bot awakened`;
+  }
+  return -1;
 }
 
 //This function triggers off mentions of Bernie or the Bernie emoji with the
 //Bernie emoji
 function theBern(message) {
-    if(message.toLowerCase().includes("bernie")) {
-      return `FEEL THE BERN <:bern:802240138171514930>`;
-    }
-    if(message.includes(":bern:")) {
-      return `FEEL THE BERN <:bern:802240138171514930>`;
-    }
-    if(message.toLowerCase().includes("bern")) {
-      return `FEEL THE BERN <:bern:802240138171514930>`;
-    }
-    return -1;
+  if (message.toLowerCase().includes("bernie")) {
+    return `FEEL THE BERN <:bern:802240138171514930>`;
+  }
+  if (message.includes(":bern:")) {
+    return `FEEL THE BERN <:bern:802240138171514930>`;
+  }
+  if (message.toLowerCase().includes("bern")) {
+    return `FEEL THE BERN <:bern:802240138171514930>`;
+  }
+  return -1;
 }
 
 //
@@ -214,14 +209,17 @@ function theBern(message) {
 // Paramters:   message - string message from chat server
 // Returns:     -1 for no keyword found, string message if found
 //
-function stonks(message){
-    if (message.toLowerCase().includes("gme")) {
-      return `ALL ABOARD! TO THE MOON`;
-    }
-    if (message.toLowerCase().includes("stock") || message.toLowerCase().includes("stonk")) {
-      return `STONKS`;
-    }
-    return -1;
+function stonks(message) {
+  if (message.toLowerCase().includes("gme")) {
+    return `ALL ABOARD! TO THE MOON`;
+  }
+  if (
+    message.toLowerCase().includes("stock") ||
+    message.toLowerCase().includes("stonk")
+  ) {
+    return `STONKS`;
+  }
+  return -1;
 }
 
 function yingbull(message) {
@@ -240,34 +238,36 @@ function parseMessageForMemeseum(message) {
   if (message.toLowerCase().includes("gme")) {
     return `ALL ABOARD! TO THE MOON`;
   }
-  if (message.toLowerCase().includes("stock") || message.toLowerCase().includes("stonk")) {
+  if (
+    message.toLowerCase().includes("stock") ||
+    message.toLowerCase().includes("stonk")
+  ) {
     return `STONKS`;
   }
   //Bernie Sanders
-  if(message.toLowerCase().includes("bernie")) {
+  if (message.toLowerCase().includes("bernie")) {
     return `FEEL THE BERN <:bern:802240138171514930>`;
   }
-  if(message.includes(":bern:")) {
+  if (message.includes(":bern:")) {
     return `FEEL THE BERN <:bern:802240138171514930>`;
   }
-  if(message.toLowerCase().includes("bern")) {
+  if (message.toLowerCase().includes("bern")) {
     return `FEEL THE BERN <:bern:802240138171514930>`;
   }
   //Nice numbers
-  if(message.includes("69") && message.includes("420")) {
+  if (message.includes("69") && message.includes("420")) {
     niceCount += 2;
-    return `DAMN! 69 and 420!? There have been ${niceCount} nice words since this bot awakened`
+    return `DAMN! 69 and 420!? There have been ${niceCount} nice words since this bot awakened`;
   }
   if (message.includes("69")) {
     niceCount++;
     return `69!? NICE. There have been ${niceCount} nice words since this bot awakened`;
   }
-  if(message.includes("420")) {
+  if (message.includes("420")) {
     niceCount++;
     return `420!? BLAZE IT. There have been ${niceCount} nice words since this bot awakened`;
   }
 }
-
 
 //Log the bot into Discord using the token
 client.login(token);

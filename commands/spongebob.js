@@ -5,15 +5,18 @@ Created:      Jan 12, 2021
 Author:       Ian Ewing
 */
 // import spongebobify from 'spongebobify';
-const spongebobify = require('spongebobify');
+const spongebobify = require("spongebobify");
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
-
-      name: 'sb',
-      description: 'Definitely not a robot',
-      execute(message) {
-        let spongebobText = message.content.split(' ');
-        spongebobText.shift();
-      message.channel.send(spongebobify(spongebobText.join(' ')));
-    },
+  data: new SlashCommandBuilder()
+    .setName("spongebob")
+    .setDescription("For when you really need to savage someone...")
+    .addStringOption((option) =>
+      option.setName("input").setDescription("Enter a string")
+    ),
+  execute(interaction) {
+    const stringToSpongebob = interaction.options.getString("input");
+    interaction.reply(spongebobify(stringToSpongebob));
+  },
 };
