@@ -1,99 +1,110 @@
 /* File Name: diceRoller.js
  * Purpose: implementation of a basic dice roller for a discord bot
- * RevHistory:
- *      Created 2021-1-13
- *      Timothy Nigh
- *  TODO: Implement keeping the highest
- *
+
+ * Revision History:
+ *   Created 2021-1-13
+ *   Timothy Nigh
+ *   Rewritten 2021-7-25
+ *   Silas (ExVacuum)
  */
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
-module.exports = {
-  data: new SlashCommandBuilder().setName("r").setDescription("roll a die").addStringOption(option => option.setName('input').setDescription('Enter a dice')),
-  async execute(interaction) {
-    const diceString = interaction.options.getString("input");
-    if (!diceString.length) {
-      interaction.reply("Bad args homie!");
-    } else {
-      let result = [];
-      diceString.forEach((element) => {
-        result.push(
-          rollDice(parseDiceInput(element, diceRegex, diceRegexKeepHighest))
-        );
-      });
-      interaction.reply(result);
-    }
+/*
+  This is a basic dice regex that handles the format <x>d<y>[k<z>]`
+  where x is the number of dice (0-999) and y is the number of sides of
+  each die (0-999), and z is the number of the highest dice to keep (0-999).
+  The pattern can be repeated an arbitrary number of times, seperated by a
+  whitespace character.
+*/
+const diceRegex = /^(?:\s(?:\d{1,3})d(?:\d{1,3})(k(?:\d{1,3}))?)*$/;
+
+const ARG = {
+  num: 0,
+  sides: 1,
+  keep: 2,
+};
+
+const STATUS = {
+  keptMoreThanRolled: {
+    flag: 0b0001,
+    message: (args) => `Why do you want me to keep the top ${args[ARG.keep]} of ${args[ARG.num]} dice roll${args[ARG.num] > 1 ? 's' : ''}?\n`,
+  },
+  keptZero: {
+    flag: 0b0010,
+    message: () => 'Why do you want me to keep 0 rolls?\n',
+  },
+  zeroSides: {
+    flag: 0b0100,
+    message: () => 'Why do you want me to roll dice with 0 sides?\n',
+  },
+  rolledZero: {
+    flag: 0b1000,
+    message: () => 'Why do you want me to roll 0 dice?\n',
   },
 };
 
-/************************************
- * THis is where dice roller functionality is going!
- *
- *
- ************************************/
-
-//This is a basic dice regex that handles the case x'd'y
-//where x is the number of dice and y is the sides of each die
-
-const diceRegex = /\dd\d/;
-
-const diceRegexKeepHighest = /\dd\dk\d/;
-//Functions to roll some dice
-
-/* Function Name: parseDiceInput
- * Purpose: Parse the input of a user
- * input: string
- * ouput:
- *        if TRUE: an array containing the number of and sides of the dice
- *                 OR an array containing the above, plus the number of highest results to keep
- *        if False: a string stating that the args were bad
- */
-
-const parseDiceInput = (element, diceRegex, diceRegexKeepHighest) =>
-  diceRegex.test(element)
-    ? diceRegexKeepHighest.test(element)
-      ? element.split(/d|k/)
-      : element.split("d")
-    : "Bad args bud";
-
-/* Function Name: Roll Dice
- * Purpose: Simulate the rolling of x dice with y sides
- * input: array with n elements:
- *          the number of dice at index 0,2,4.....n
- *          The number of sides each die has at index 1,3,5.....n
- * ouput: an aray of the results, or the args if the args are bad
- *
- *      !NOTE: in the current implementation, this should only process one pair of args at a time
- *             However, it has been made extendible so it *COULD* process an array  of n args
- */
-
-function rollDice(arg) {
-  let result = [];
-  const min = 1;
-  if (arg.length >= 2) {
-    //Sexy new logic
-    //Roll that many dice
-    for (let i = 0; i < parseInt(arg[0]); i++) {
-      //Grab the digit in the index+1 slot to get the number of sides of dice
-      result.push(getRndInteger(min, parseInt(arg[1])));
-    }
-  } else {
-    result = arg;
+function validateArgs(args) {
+  let status = 0b0000;
+  if (args[ARG.keep] !== undefined) {
+    status |= (args[ARG.keep] > args[ARG.num]) * STATUS.keptMoreThanRolled.flag;
+    status |= (args[ARG.keep] === 0) * STATUS.keptZero.flag;
   }
-
-  if (arg.length === 3) {
-    result.sort((a, b) => b - a);
-    result = result.slice(0, arg[2]);
-  }
-  return result;
+  status |= (args[ARG.sides] === 0) * STATUS.zeroSides.flag;
+  status |= (args[ARG.num] === 0) * STATUS.rolledZero.flag;
+  return status;
 }
 
-/* Function Name: getRndInteger
- * Purpose: Gets a random integer between min and max (inclusive)
- * input: min value, max value
- * ouput: Random integer between and including max and min
- *
- */
+function getStatusMessage(status, args) {
+  let message = '';
+  Object.values(STATUS).forEach((stat) => {
+    if ((status | stat.flag) === status) {
+      message = message.concat(stat.message(args));
+    }
+  });
+  message = message.concat('I\'m not doing that, you\'re insane.\n\n');
+  return message;
+}
 
-const getRndInteger = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
+function rollDice(dice, message) {
+  let returnMessage = message;
+  const args = dice.split(/d|k/gm);
+  args.forEach((arg, i) => { args[i] = Number.parseInt(args[i], 10); });
+  let results = [];
+  const status = validateArgs(args);
+  if (status !== 0) {
+    returnMessage = returnMessage.concat(getStatusMessage(status, args));
+    return returnMessage;
+  }
+
+  returnMessage = returnMessage.concat(`${args[ARG.keep] ? `Top ${args[ARG.keep]} of `
+    : ''}${args[ARG.num]} ${args[ARG.sides]}-sided di${args[ARG.sides] > 1 ? 'ce' : 'e'} roll${args[ARG.num] > 1 ? 's' : ''}:\n`);
+  for (let i = 0; i < args[ARG.num]; i++) {
+    results.push(Math.floor(Math.random() * args[ARG.sides] + 1));
+  }
+  if (args[ARG.keep]) {
+    results.sort((a, b) => b - a);
+    results = results.slice(0, args[ARG.keep]);
+  }
+  returnMessage = returnMessage.concat('```\n');
+  for (let i = 0; i < results.length; i++) {
+    returnMessage = returnMessage.concat(`${i === 0 ? '' : ', '}${results[i]}`);
+  }
+  returnMessage = returnMessage.concat('```\n');
+  return returnMessage;
+}
+
+module.exports = {
+  name: 'r',
+  description: 'roll dice',
+  execute(message) {
+    const diceString = message.content.replace('!r', '');
+    let returnMessage = 'I literally have no idea what you\'re talking about.';
+    if (diceRegex.test(diceString)) {
+      let diceSets = diceString.split(/\s/gm);
+      diceSets = diceSets.slice(1);
+      returnMessage = '';
+      diceSets.forEach((dice) => { returnMessage = rollDice(dice, returnMessage); });
+    }
+    message.channel.send(returnMessage.length <= 2000 ? returnMessage : 'This command would have generated way too much output, please try something else.');
+  },
+};
