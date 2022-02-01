@@ -112,7 +112,7 @@ module.exports = {
     .addStringOption((option) =>
       option
         .setName("dice")
-        .setDescription("A space-separated list of dice sets to roll")
+        .setDescription("A space-separated list of dice sets to roll, ie '1d6 12d3'")
     ),
   execute(interaction, client) {
     const diceString = ` ${interaction.options.getString("dice")}`;

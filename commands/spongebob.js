@@ -17,6 +17,8 @@ module.exports = {
     ),
   execute(interaction) {
     const stringToSpongebob = interaction.options.getString("input");
-    interaction.reply(spongebobify(stringToSpongebob));
+    if (stringToSpongebob) {
+      interaction.reply(spongebobify(stringToSpongebob));
+    }
   },
 };
